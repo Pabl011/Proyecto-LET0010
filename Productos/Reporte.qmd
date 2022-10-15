@@ -1,26 +1,26 @@
 ---
-title: "Presentación"
+title: "Análisis de Partidas de Ajedrez"
 format: html
 editor: visual
 ---
 
-## Quarto
+## Introducción
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+El ajedrez moderno es en un juego de mesa de tipo estrategia por turnos en el que se enfrentan dos jugadores en un uno contra uno, el cual terminó de asentarse completamente a inicios del siglo XVI en el continente europeo. Desde esa época hasta el día de hoy, se ha convertido en un deporte reconocido mundialmente en el que se han realizado una inmensa cantidad de competiciones.
 
-## Running Code
+Una partida de ajedrez se disputa entre dos jugadores; cada uno posee 16 piezas, siendo las de un jugador de color claro, llamadas *blancas*, y las de su oponente de color oscuro, llamadas *negras*. Las piezas se mueven sobre un tablero de ajedrez cuadrado de 64 casillas. El ajedrez no es un juego de azar, sino un juego racional y de estrategia, ya que cada jugador decidirá el movimiento de sus piezas en cada turno. Comienza a jugar quien lleve las blancas, lo que le concede una ventaja pequeña pero esencial en los niveles altos de competición.
+![](images/tablero%20lichess.jpg){width="343"}
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia.
 
-```{r}
-1 + 1
-```
+Existen determinados factores que pueden afectar o predecir que un jugador gane a otro, ya sea el color de sus piezas, el ELO de los jugadores (correspondiente al nivel competitivo que presenta un jugador), la cantidad de turnos que dura una partida, el tipo de partida, etc.
 
-You can add options to executable code like this
+¿Es este juego realmente equilibrado o se encuentra sesgado en favor de uno de los bandos?, es decir, ¿uno de los jugadores siempre presentará una ventaja por sobre su oponente?¿Influye el color del equipo en una partida de larga duración?
 
-```{r}
-#| echo: false
-2 * 2
-```
+¿Es el ELO un sistema eficaz para medir el nivel de competencia de un jugador?¿Influye el ELO de los jugadores en algunos resultados de la partida?
 
-The `echo: false` option disables the printing of code (only output is displayed).
+Resulta relevante responder a estas preguntas, con motivo de estimar cuán equilibrado realmente se encuentra este deporte y su sistema de emperajemientos , si existe tendencia a un resultado debido a un factor específico y cómo varían las partidas dependiendo del nivel de los jugadores, ya que en partidas se enfrenta a jugadores de un nivel competitivo similar.
+
+Con objetivo de aclarar estas incógnitas, en este proyecto realizaremos una exploración de los datos de distintas partidas de ajedrez, recabadas a partir de la plataforma en línea "Lichess", la cual es una plataforma en la que se disputan partidas y torneos de ajedrez diariamente. Analizaremos algunos de los factores que podrían influenciar en la victoria de un jugador por sobre otro y estimar qué tan equilibrado se encuentra este deporte.
+
+Este trabajo se encuentra dividido en tres secciones: En la primera sección presentaremos y describiremos los datos y variables que serán utilizadas y los métodos que aplicaremos para su análisis. En la segunda sección, mostraremos los resultados obtenidos, organizados en base a las variables de interés. Para finalizar, en la tercera sección, presentaremos las conclusiones acerca de las variables que fueron llevadas al análisis y su influencia en el resultado de una partida.
