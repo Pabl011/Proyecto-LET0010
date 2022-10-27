@@ -33,12 +33,16 @@ library(ggthemes)
 
 #Importación y limpieza de datos ----
 
-datos <- read_csv("Datos/chess_games.csv", col_select = c(2:6, 8, 10))
+datos <- read_csv("Datos/chess_games.csv", col_select = c(3:5, 8, 10))
 
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
-  filter(datos$time_increment == "10+0")
+  rename(c("Turnos"="turns", "Estado de victoria"="victory_status", "Ganador" = "winner", "Rango Blanco"="white_rating", "Rango Negro"="black_rating", "Diferencia de rangos"="rating_diff"))
 
+colname(datos) <- c("Turnos", "Estado de victoria", "Ganador", "Rango Blanco", "Rango Negro", "Diferencia de rangos")
+
+datos <- datos |> 
+  filter(datos$time_increment == "10+0")
 
 #Visualización de datos ----
 
@@ -46,7 +50,7 @@ sort(table(datos$time_increment), decreasing = T)
 
 table(datos$turns)
 table(datos$winner)
-
+table(datos$rated)
 ##Relación entre la cantidad de turnos y el ganador de la partida. ----
 
 datos |> 
@@ -57,11 +61,12 @@ datos |>
                outlier.size=1.5, notch=FALSE ) +
   scale_x_continuous(breaks = seq(0, 350, by = 50))
 
-datos |> 
+datos |> #INTERESA: Saber si Influye el color del equipo en una partida de larga duración
   ggplot(aes(x = turns, y = winner)) +
   labs(title="Titulo") + 
   geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=16,
-               outlier.size=1.5, notch=FALSE )
+               outlier.size=1.5, notch=FALSE ) +
+  scale_x_continuous(breaks = seq(0, 350, by = 50))
 
 
 ##Diferencia de ELO y efectividad del emparejamiento entre contrincantes. ----
@@ -79,7 +84,7 @@ datos |>
   ggplot(aes(x = black_rating, y = rating_diff)) +
   geom_point(shape = 1)
 
-datos |> 
+datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento.
   ggplot(aes(x = white_rating, y = black_rating)) +
   geom_point(shape = 1)
 
@@ -97,6 +102,12 @@ datos |>
   labs(title="Titulo") + 
   geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=16,
                outlier.size=1.5, notch=FALSE )
+
+datos |> #INTERESA: Determinar si este juego es realmente equilibrado o se encuentra sesgado en favor de uno de los bandos.
+  ggplot(aes(x = rating_diff, y = winner)) +
+  labs(title="Titulo") + 
+  geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=16,
+               outlier.size=1.5, notch=FALSE ) #INTERESA: Conocer si Influye la diferencia de ELO de los jugadores en el ganador de la partida.
 
 
 datos |> 
@@ -117,14 +128,81 @@ datos |>
 ##Relación entre la diferencia de ELO y el resultado obtenido en la partida. ----
 
 datos |> 
-  ggplot(aes(x = rating_diff, y = victory_status)) +
+  ggplot(aes(x = white_rating, y = victory_status)) +
   labs(title="Titulo") + 
-  geom_boxplot( outlier.colour="black", outlier.shape=1,
+  geom_boxplot( outlier.colour="black", outlier.shape=0,
                 outlier.size=1.5, notch=FALSE )
 
+datos |> 
+  ggplot(aes(x = black_rating, y = victory_status)) +
+  labs(title="Titulo") + 
+  geom_boxplot( outlier.colour="black", outlier.shape=0,
+                outlier.size=1.5, notch=FALSE )
+
+datos |> 
+  ggplot(aes(x = rating_diff, y = victory_status)) +
+  labs(title="Titulo") + 
+  geom_boxplot( outlier.colour="black", outlier.shape=0,
+                outlier.size=1.5, notch=FALSE )
+
+table(datos$victory_status)
+
+
+##Relación entre la cantidad de turnos y la diferencia de ELO. ----
+
+datos |> 
+  ggplot(aes(x = turns, y = white_rating)) +
+  geom_point(shape = 1)
+
+datos |> 
+  ggplot(aes(x = turns, y = black_rating)) +
+  geom_point(shape = 1)
+
+datos |> #INTERESA
+  ggplot(aes(x = turns, y = rating_diff)) +
+  geom_point(shape = 1)
+
+##Relación entre el ganador y el resultado obtenido en la partida. ----
+
+#No se puede realizar. Son dos nominales.
 
 
 
+
+#TABLA ----
+
+#install.packages("datos")
+#install.packages("gt")
+#install.packages("gtExtras")
+#install.packages("gtsummary")
+#install.packages("reactable")
+#install.packages("kableExtra")
+#install.packages("broom")
+#install.packages("broom.mixed")
+library(datos)
+library(gt)
+library(gtsummary)
+library(broom)
+library(dplyr)
+library(tidyr)
+
+data.frame(Variable = names(datos),
+           Tipo = c("Cualitativa dicotómica", "Cuantitativa discreta", "Cualitativa nominal", "Cualitativa nominal",
+                    "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta"),
+           Descripción = c(
+             "Indica si la partida es clasificatoria o no.",
+             "Corresponde a la cantidad de turnos que duró la partida.",
+             "Corresponde al resultado de la partida, independientemente del ganador. Puede ser empate, rendición, falta de tiempo o jaque mate.",
+             "Corresponde al equipo ganador de la partida. En caso de haber un empate, no existe ganador.",
+             "Corresponde a la modalidad de juego elegida para la partida. La modalidad refiere a la cantidad de tiempo en minutos que tiene un jugador para ejecutar su turno y la adición de tiempo en segundos conforme se ejecuta un turno.",
+             "Puntos de clasificación ELO del contrincante del equipo blanco. Representa el nivel competitivo del jugador.",
+             "Puntos de clasificación ELO del contrincante del equipo negro. Representa el nivel competitivo del jugador.",
+             "Diferencia de ELO entre el jugador blanco y negro. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor ELO, y viceversa." 
+           )) |> 
+  gt() |> 
+  tab_header(title = "Base de datos de Partidas de ajedrez en línea",
+             subtitle = "Provenientes de la plataforma Lichess") |> 
+  tab_source_note(source_note = "Fuente: Kaggle.com")
 
 
 
