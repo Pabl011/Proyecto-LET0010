@@ -91,7 +91,7 @@ datos <- datos |>
 
 Dentro de esta sección, daremos a conocer las variables que utilizaremos, además de los métodos que aplicaremos para su análisis.
 
-En la siguiente tabla, se presentan las distintas variables de la base de datos, su tipo y una descripción para entender mejor cómo funciona esta.
+En la siguiente tabla, se presentan las distintas variables de la base de datos con las que trabajaremos, su tipo y una descripción para entender mejor cómo funciona esta.
 
 ```{r}
 #| echo: false
@@ -147,8 +147,13 @@ Para el caso de los métodos que utilizaremos, nos basaremos principalmente en e
 #| echo: false
 datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento.
   ggplot(aes(x = white_rating, y = black_rating)) +
-  geom_point(shape = 1)
+  geom_point(shape = 16, size=0.8) +
+  geom_abline(aes(intercept = mean(black_rating) - mean(white_rating),
+                           slope = 1),
+                       linetype = 2, color = "red")
 ```
+
+Podemos observar una cruz formada, lo que nos indicaría que quizá estos que el nivel 1500 podría considerarse como el nivr
 
 ```{r}
 #| echo: false
@@ -158,6 +163,28 @@ datos |> #INTERESA: Determinar si este juego es realmente equilibrado o se encue
   geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=1,
                outlier.size=1.5, notch=FALSE ) #INTERESA: Conocer si Influye la diferencia de ELO de los jugadores en el ganador de la partida.
 
+
+#datos |> 
+#  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
+#  geom_density(alpha= 0.4) +
+#  xlim(-1000, 1000) +
+#  scale_color_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) +
+#  scale_fill_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) 
+
+
+datos |> 
+  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
+  geom_density(alpha= 0.4) +
+  xlim(-1000, 1000) +
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(values=c("black", "slategray3", "white")) 
+
+#datos |> 
+#  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
+#  geom_histogram() +
+#  xlim(-1000, 1000) +
+#  scale_color_manual(values=c("black", "black", "black")) +
+#  scale_fill_manual(values=c("black", "slategray3", "white")) 
 ```
 
 ```{r}
@@ -168,6 +195,23 @@ datos |> #INTERESA: Saber si Influye el color del equipo en una partida de larga
   geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=1,
                outlier.size=1.5, notch=FALSE ) +
   scale_x_continuous(breaks = seq(0, 350, by = 50)) 
+
+#datos |> 
+#  ggplot(aes(x = turns, fill=winner, colour = winner)) +
+#  geom_density(alpha= 0.4) +
+#  xlim(0, 250)+
+#  scale_color_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) +
+#  scale_fill_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) 
+
+datos |> 
+  ggplot(aes(x = turns, fill=winner, colour = winner)) +
+  geom_density(alpha= 0.6) +
+  xlim(0, 250)+
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(values=c("black", "slategray3", "white")) 
+
+
+# c("dodgerblue1", "darkorchid1", "firebrick1")
 ```
 
 ```{r}
@@ -175,5 +219,22 @@ datos |> #INTERESA: Saber si Influye el color del equipo en una partida de larga
 datos |> #INTERESA
   ggplot(aes(x = turns, y = rating_diff)) +
   geom_point(shape = 1) +
-  geom_hline(yintercept=0, col="indianred4")
+  geom_hline(yintercept=0, col="red3")
+
+
+```
+
+```{r}
+
+datos |> 
+  ggplot(aes(x = turns, fill=victory_status, colour = victory_status)) +
+  geom_density(alpha= 0.4) +
+  xlim(0, 250)
+#  scale_color_manual(values=c("black", "black", "black")) +
+#  scale_fill_manual(values=c("black", "slategray3", "white")) 
+
+datos |> 
+  ggplot(aes(x = rating_diff, fill=victory_status, colour = victory_status)) +
+  geom_density(alpha= 0.2) +
+  xlim(-1000, 1000)
 ```
