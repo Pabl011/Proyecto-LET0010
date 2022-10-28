@@ -9,6 +9,8 @@ self-contained: false
 
 ## Introducción
 
+### Contexto
+
 El ajedrez moderno es un juego de mesa, el cual, desde su origen oriental, terminó de asentarse completamente a inicios del siglo XVI en el continente europeo. Desde esa época hasta el día de hoy, se ha convertido en un deporte reconocido mundialmente en el que se han realizado una inmensa cantidad de competiciones.
 
 Una partida de ajedrez se disputa entre dos jugadores, uno contra uno; cada uno posee 16 piezas, cada una con su propia particularidad, siendo las de un jugador de color claro, llamadas *blancas*, y las de su oponente de color oscuro, llamadas *negras*. Las piezas se mueven sobre un tablero de ajedrez cuadrado de 64 casillas. El ajedrez no es un juego de azar, sino un juego racional y de estrategia, ya que cada jugador decidirá el movimiento de sus piezas en cada turno. Comienza a jugar quien lleve las blancas, lo que le concede una ventaja pequeña pero esencial en los niveles altos de competición.
@@ -17,15 +19,15 @@ En la siguiente imagen se da una representación visual de lo descrito al inicio
 
 ![](images/tablero%20lichess1.JPG){width="375"}
 
-## 
+### Planteamiento del caso.
 
 Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia.
 
 Existen determinados factores que pueden afectar o predecir que un jugador gane a otro, ya sea el color de sus piezas, el Elo de los jugadores (correspondiente al nivel competitivo que presenta un jugador), la cantidad de turnos que dura una partida, el tipo de partida, entre otros.
 
-¿Es este juego realmente equilibrado o se encuentra sesgado en favor de uno de los bandos?, es decir, ¿uno de los jugadores siempre presentará una ventaja por sobre su oponente? ¿Influye el color del equipo en una partida de larga duración? ¿Es el Elo un sistema eficaz para medir el nivel de competencia de un jugador? ¿Influye el Elo de los jugadores en algunos resultados de la partida?
+Resulta relevante analizar estos factores, con motivo de estimar cuán equilibrado realmente se encuentra este deporte y su sistema de emperajemientos , si existe tendencia a un resultado debido a un factor específico y cómo varían las partidas dependiendo del nivel de los jugadores, ya que en partidas se enfrenta a jugadores de un nivel competitivo similar.
 
-Resulta relevante responder a estas preguntas, con motivo de estimar cuán equilibrado realmente se encuentra este deporte y su sistema de emperajemientos , si existe tendencia a un resultado debido a un factor específico y cómo varían las partidas dependiendo del nivel de los jugadores, ya que en partidas se enfrenta a jugadores de un nivel competitivo similar.
+¿Es este juego realmente equilibrado o se encuentra sesgado en favor de uno de los bandos? ¿Influye el color del equipo en una partida de larga duración? ¿Es el Elo un sistema eficaz para medir el nivel de competencia de un jugador? ¿Influye el Elo de los jugadores en algunos resultados de la partida?
 
 Con objetivo de aclarar estas incógnitas, en este proyecto realizaremos una exploración de los datos de distintas partidas de ajedrez, recabadas en la plataforma en línea "Lichess", la cual es una plataforma en la que se disputan partidas y torneos de ajedrez diariamente. Analizaremos algunos de los factores que podrían influenciar en la victoria de un jugador por sobre otro y estimar qué tan equilibrado se encuentra este deporte.
 
@@ -117,12 +119,30 @@ data.frame(Variable = names(datos),
 
 ```{r}
 #| echo: false
+#| eval: false
 data.frame(Variable = c("Turnos", "Estado de victoria", "Ganador", "Rango Blanco", "Rango Negro", "Diferencia de rangos"),
            Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta"),
            Descripción = c(
              "Corresponde a la cantidad de turnos que duró la partida.",
              "Corresponde al resultado de la partida, independientemente del ganador. Puede ser empate, rendición, falta de tiempo o jaque mate.",
-             "Corresponde al equipo ganador de la partida. En caso de haber un empate, no existe ganador.",
+             "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
+             "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador.",
+             "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador.",
+             "Diferencia de Elo entre el jugador blanco y negro. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa." 
+           )) |> 
+  gt() |> 
+  tab_header(title = "Base de datos de Partidas de ajedrez en línea",
+             subtitle = "Provenientes de la plataforma Lichess") |> 
+  tab_source_note(source_note = "Fuente: Kaggle.com")
+```
+
+```{r}
+#| echo: false
+data.frame(Variable = c("Turnos", "Ganador", "Rango Blanco", "Rango Negro", "Diferencia de rangos"),
+           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta"),
+           Descripción = c(
+             "Corresponde a la cantidad de turnos que duró la partida.",
+             "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
              "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador.",
              "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador.",
              "Diferencia de Elo entre el jugador blanco y negro. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa." 
@@ -141,7 +161,11 @@ Para el caso de los métodos que utilizaremos, nos basaremos principalmente en e
 
 -Determinar si este juego es realmente equilibrado o se encuentra sesgado en favor de uno de los bandos.
 
--Saber si Influye el color del equipo en una partida de larga duración
+-Saber si Influye el color del equipo en una partida de larga duración.
+
+## Análisis de resultados.
+
+Dentro de esta sección, procederemos con el análisis de datos y la presentación de los resultados obtenidos en base a la observación de gráficas
 
 ```{r}
 #| echo: false
@@ -150,7 +174,8 @@ datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nive
   geom_point(shape = 16, size=0.8) +
   geom_abline(aes(intercept = mean(black_rating) - mean(white_rating),
                            slope = 1),
-                       linetype = 2, color = "red")
+                       linetype = 2, color = "red") +
+  geom_point(aes(x= 1500,y= 1500), colour="red")
 ```
 
 Podemos observar una cruz formada, lo que nos indicaría que quizá estos que el nivel 1500 podría considerarse como el nivr
