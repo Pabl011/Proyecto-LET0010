@@ -37,12 +37,40 @@ datos <- read_csv("Datos/chess_games.csv", col_select = c(3:5, 8, 10))
 
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
-  rename(c("Turnos"="turns", "Estado de victoria"="victory_status", "Ganador" = "winner", "Rango Blanco"="white_rating", "Rango Negro"="black_rating", "Diferencia de rangos"="rating_diff"))
+  mutate(mean_rating = (datos$white_rating + datos$black_rating)/2)
+#  rename(c("Turnos"="turns", "Estado de victoria"="victory_status", "Ganador" = "winner", "Rango Blanco"="white_rating", "Rango Negro"="black_rating", "Diferencia de rangos"="rating_diff"))
 
-colname(datos) <- c("Turnos", "Estado de victoria", "Ganador", "Rango Blanco", "Rango Negro", "Diferencia de rangos")
 
 datos <- datos |> 
   filter(datos$time_increment == "10+0")
+
+
+datos |> 
+  ggplot(aes(x = turns, fill=mean_rating, colour = mean_rating)) +
+  geom_density(alpha= 0.6)+
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(values=c("black", "slategray3", "white")) 
+
+datos |> 
+  ggplot(aes(x = turns, y = mean_rating)) +
+  geom_point(shape = 1)
+
+datos |> 
+  ggplot(aes(x = turns, y = mean_rating)) +
+  geom_point(shape = 1)
+
+hist(datos$mean_rating, breaks=100, xlim = c(816, 2476), ylim = c(0, 1000))
+abline(v= 1500, h = 740)
+mean(datos$mean_rating)
+
+datos |> 
+  ggplot(aes(x = mean_rating, fill=winner, colour = winner)) +
+  geom_histogram() +
+  xlim(816, 2476) +
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(values=c("black", "slategray3", "white")) 
+
+head(sort(table(datos$mean_rating), decreasing = T))
 
 #Visualización de datos ----
 

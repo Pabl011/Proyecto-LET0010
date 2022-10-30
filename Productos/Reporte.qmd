@@ -88,7 +88,8 @@ library(here) #Para importar el dataset desde la carpeta "Datos".
 datos <- read_csv(here("./Datos/chess_games.csv"), col_select = c(3:5, 8, 10))
 
 datos <- datos |> 
-  mutate(rating_diff = datos$white_rating - datos$black_rating)
+  mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
+  mutate(mean_rating = (datos$white_rating + datos$black_rating)/2)
 ```
 
 Dentro de esta sección, daremos a conocer las variables que utilizaremos, además de los métodos que aplicaremos para su análisis.
@@ -138,14 +139,15 @@ data.frame(Variable = c("Turnos", "Estado de victoria", "Ganador", "Rango Blanco
 
 ```{r}
 #| echo: false
-data.frame(Variable = c("Turnos", "Ganador", "Rango Blanco", "Rango Negro", "Diferencia de rangos"),
-           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta"),
+data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
+           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua"),
            Descripción = c(
              "Corresponde a la cantidad de turnos que duró la partida.",
              "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
-             "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador.",
-             "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador.",
-             "Diferencia de Elo entre el jugador blanco y negro. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa." 
+             "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador dentro de la plataforma.",
+             "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador dentro de la plataforma.",
+             "Diferencia de Elo entre los contrincantes. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa.",
+             "Corresponde al promedio del Elo entre los dos jugadores."
            )) |> 
   gt() |> 
   tab_header(title = "Base de datos de Partidas de ajedrez en línea",
@@ -165,7 +167,11 @@ Para el caso de los métodos que utilizaremos, nos basaremos principalmente en e
 
 ## Análisis de resultados.
 
-Dentro de esta sección, procederemos con el análisis de datos y la presentación de los resultados obtenidos en base a la observación de gráficas
+Dentro de esta sección, procederemos con el análisis de datos y la presentación de los resultados obtenidos en base a la observación de gráficas.
+
+Respecto al sistema de puntuación competitivo Elo, resulta relevante aclarar que, dentro de la plataforma Lichess, un jugador con un rango entre 1300 y 1700 se considera promedio, bajo ese rango se puede decir que el jugador es un principiante, mientras que por encima es uno intermedio que empieza a tener un nivel avanzado, y más arriba de 2000 de Elo, se podría considerar un jugador con un nivel bastante avanzado.
+
+A continuación, en la Figura 1, nos encontramos con un gráfico de puntos en el que podemos observar la relación entre el nivel competitivo de dos jugadores en una partida. Cada punto representa una partida, mientras que su posición indica el Elo de cada contrincante:
 
 ```{r}
 #| echo: false
@@ -175,68 +181,95 @@ datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nive
   geom_abline(aes(intercept = mean(black_rating) - mean(white_rating),
                            slope = 1),
                        linetype = 2, color = "red") +
-  geom_point(aes(x= 1500,y= 1500), colour="red")
+  geom_point(aes(x= 1500,y= 1500), colour="red") +
+  scale_x_continuous(breaks = seq(0, 3000, by = 250)) +
+  labs(title = "Figura 1. Relación entre el Elo de dos jugadores en una partida.",
+       x = "Elo Blancas", y = "Elo Negras")
 ```
 
-Podemos observar una cruz formada, lo que nos indicaría que quizá estos que el nivel 1500 podría considerarse como el nivr
+Podemos observar claras tendencias de que se empareja a jugadores con un Elo similar entre sí. Existe un patrón de proporción directa entre el nivel competitivo de un jugador respecto a su contrincante.
+
+Podemos observar, además, una cruz formada con centro, marcado como un punto de color rojo, en las coordenadas (1500, 1500) aproximadamente. También es posible apreciar, mediante esa cruz, que existe una cierta tendencia a emparejar a un jugador con un Elo de 1500 apróx. junto a otro que puede tener un Elo bastante superior como inferior.
+
+En el siguiente histograma podemos entender de mejor manera lo intuido en el párrafo anterior:
 
 ```{r}
 #| echo: false
-datos |> #INTERESA: Determinar si este juego es realmente equilibrado o se encuentra sesgado en favor de uno de los bandos.
-  ggplot(aes(x = rating_diff, y = winner)) +
-  labs(title="Titulo") + 
-  geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=1,
-               outlier.size=1.5, notch=FALSE ) #INTERESA: Conocer si Influye la diferencia de ELO de los jugadores en el ganador de la partida.
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
 
+datos |> 
+  ggplot(aes(x = mean_rating)) +
+  geom_histogram(aes(y=..density..), color="black", fill="slategray3", breaks= seq(800, 2500, 25)) +
+#  xlim(800, 2500) +
+  scale_x_continuous(breaks = seq(750, 2500, by = 250)) +
+  geom_density(color = "black", fill = "cadetblue2", alpha = 0.15) +
+  geom_vline(aes(xintercept=getmode(mean_rating), color="Moda"),
+             linetype="dashed", size=0.8) +
+  geom_vline(aes(xintercept=mean(mean_rating), color="Media"),
+             linetype="dashed", size=0.8) +
+  geom_vline(aes(xintercept=median(mean_rating), color="Mediana"),
+             linetype="dashed", size=0.8) +
+  scale_color_manual(name = "", values = c(Moda = "red", Media = "blue", Mediana = "green")) +
+  labs(title = "Figura 2. Distribución del promedio de Elo entre ambos jugadores.",
+       subtitle = "Cada punto representa una partida observada.",
+       x = "Elo promedio", y = "Densidad")
+```
 
-#datos |> 
-#  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
-#  geom_density(alpha= 0.4) +
-#  xlim(-1000, 1000) +
-#  scale_color_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) +
-#  scale_fill_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) 
+```{r}
+#| echo: false
+
+#datos |> #INTERESA: Determinar si este juego es realmente equilibrado o se #encuentra sesgado en favor de uno de los bandos.
+#  ggplot(aes(x = rating_diff, y = winner)) +
+#  labs(title="Titulo") + 
+#  geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", 
+#               outlier.shape=1,
+#               outlier.size=1.5, notch=FALSE ) #INTERESA: Conocer si Influye la diferencia de ELO de los jugadores en el ganador de la partida.
 
 
 datos |> 
-  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
+  ggplot(aes(x = rating_diff, fill=winner)) +
   geom_density(alpha= 0.4) +
   xlim(-1000, 1000) +
+#  scale_x_continuous(breaks = seq(-1500, 1500, by = 250)) +
   scale_color_manual(values=c("black", "black", "black")) +
-  scale_fill_manual(values=c("black", "slategray3", "white")) 
+  scale_fill_manual(name="Ganador", values=c("black", "slategray3", "white"),
+                    labels = c("Negras", "Empate", "Blancas")) +
+  labs(title = "Figura 3. Relación entre la diferencia de Elo y el equipo ganador.",
+       subtitle = "Distribución de la diferencia de Elo respecto a cada resultado.",
+       x = "Diferencia de Elo", y = "Densidad")
+  
 
-#datos |> 
-#  ggplot(aes(x = rating_diff, fill=winner, colour = winner)) +
-#  geom_histogram() +
-#  xlim(-1000, 1000) +
-#  scale_color_manual(values=c("black", "black", "black")) +
-#  scale_fill_manual(values=c("black", "slategray3", "white")) 
 ```
 
 ```{r}
 #| echo: false
-datos |> #INTERESA: Saber si Influye el color del equipo en una partida de larga duración
-  ggplot(aes(x = turns, y = winner)) +
-  labs(title="Titulo") + 
-  geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black", outlier.shape=1,
-               outlier.size=1.5, notch=FALSE ) +
-  scale_x_continuous(breaks = seq(0, 350, by = 50)) 
 
-#datos |> 
-#  ggplot(aes(x = turns, fill=winner, colour = winner)) +
-#  geom_density(alpha= 0.4) +
-#  xlim(0, 250)+
-#  scale_color_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) +
-#  scale_fill_manual(values=c("dodgerblue1", "darkorchid1", "firebrick1")) 
+#datos |> #INTERESA: Saber si Influye el color del equipo en una partida de larga #duración
+#  ggplot(aes(x = turns, y = winner)) +
+#  labs(title="Titulo") + 
+#  geom_boxplot(fill = c("black", "gray", "white"), outlier.colour="black",
+#               outlier.shape=1,
+#               outlier.size=1.5, notch=FALSE ) +
+#  scale_x_continuous(breaks = seq(0, 350, by = 50)) 
+
+
+
 
 datos |> 
-  ggplot(aes(x = turns, fill=winner, colour = winner)) +
+  ggplot(aes(x = turns, fill=winner)) +
   geom_density(alpha= 0.6) +
-  xlim(0, 250)+
+#  xlim(0, 350) +
   scale_color_manual(values=c("black", "black", "black")) +
-  scale_fill_manual(values=c("black", "slategray3", "white")) 
+  scale_fill_manual(name = "Ganador", values=c("black", "slategray3", "white"),
+                    labels = c("Negras", "Empate", "Blancas")) +
+  scale_x_continuous(breaks = seq(0, 350, by = 50)) +
+  labs(title = "Figura 4. Relación entre el número de turnos y el equipo ganador.",
+       subtitle = "Distribución del número de turnos respecto a cada resultado.",
+       x = "Turnos", y = "Densidad")
 
-
-# c("dodgerblue1", "darkorchid1", "firebrick1")
 ```
 
 ```{r}
@@ -244,8 +277,11 @@ datos |>
 datos |> #INTERESA
   ggplot(aes(x = turns, y = rating_diff)) +
   geom_point(shape = 1) +
-  geom_hline(yintercept=0, col="red3")
-
+  geom_hline(yintercept=0, col="red3", linetype = 1) +
+  scale_x_continuous(breaks = seq(0, 350, by = 50)) +
+  labs(title = "Figura 5. Relación entre el número de turnos y la diferencia de Elo.",
+       subtitle = "Cada punto representa una partida observada.",
+       x = "Turnos", y = "Diferencia de Elo")
 
 ```
 
