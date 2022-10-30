@@ -191,7 +191,7 @@ Podemos observar claras tendencias de que se empareja a jugadores con un Elo sim
 
 Podemos observar, además, una cruz formada con centro, marcado como un punto de color rojo, en las coordenadas (1500, 1500) aproximadamente. También es posible apreciar, mediante esa cruz, que existe una cierta tendencia a emparejar a un jugador con un Elo de 1500 apróx. junto a otro que puede tener un Elo bastante superior como inferior.
 
-En el siguiente histograma podemos entender de mejor manera lo intuido en el párrafo anterior:
+En el siguiente histograma de la Figura 2 podemos entender de mejor manera lo intuido en el párrafo anterior:
 
 ```{r}
 #| echo: false
@@ -217,6 +217,8 @@ datos |>
        subtitle = "Cada punto representa una partida observada.",
        x = "Elo promedio", y = "Densidad")
 ```
+
+Podemos notar, en base a la figura anterior, que existe una tendencia a emparejar partidas en la que el promedio del Elo de los jugadores enfrentados sea cercano a 1500.
 
 ```{r}
 #| echo: false

@@ -214,23 +214,94 @@ library(broom)
 library(dplyr)
 library(tidyr)
 
-data.frame(Variable = names(datos),
-           Tipo = c("Cualitativa dicotómica", "Cuantitativa discreta", "Cualitativa nominal", "Cualitativa nominal",
-                    "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta"),
+data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
+           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua"),
            Descripción = c(
-             "Indica si la partida es clasificatoria o no.",
              "Corresponde a la cantidad de turnos que duró la partida.",
-             "Corresponde al resultado de la partida, independientemente del ganador. Puede ser empate, rendición, falta de tiempo o jaque mate.",
-             "Corresponde al equipo ganador de la partida. En caso de haber un empate, no existe ganador.",
-             "Corresponde a la modalidad de juego elegida para la partida. La modalidad refiere a la cantidad de tiempo en minutos que tiene un jugador para ejecutar su turno y la adición de tiempo en segundos conforme se ejecuta un turno.",
-             "Puntos de clasificación ELO del contrincante del equipo blanco. Representa el nivel competitivo del jugador.",
-             "Puntos de clasificación ELO del contrincante del equipo negro. Representa el nivel competitivo del jugador.",
-             "Diferencia de ELO entre el jugador blanco y negro. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor ELO, y viceversa." 
+             "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
+             "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador dentro de la plataforma.",
+             "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador dentro de la plataforma.",
+             "Diferencia de Elo entre los contrincantes. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa.",
+             "Corresponde al promedio del Elo entre los dos jugadores."
            )) |> 
   gt() |> 
   tab_header(title = "Base de datos de Partidas de ajedrez en línea",
              subtitle = "Provenientes de la plataforma Lichess") |> 
   tab_source_note(source_note = "Fuente: Kaggle.com")
+#FIGURA 1
+
+datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento.
+  ggplot(aes(x = white_rating, y = black_rating)) +
+  geom_point(shape = 16, size=0.8) +
+  geom_abline(aes(intercept = mean(black_rating) - mean(white_rating),
+                  slope = 1),
+              linetype = 2, color = "red") +
+  geom_point(aes(x= 1500,y= 1500), colour="red") +
+  scale_x_continuous(breaks = seq(0, 3000, by = 250)) +
+  labs(title = "Figura 1. Relación entre el Elo de dos jugadores en una partida.",
+       x = "Elo Blancas", y = "Elo Negras")
+
+#FIGURA 2
+
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+datos |> 
+  ggplot(aes(x = mean_rating)) +
+  geom_histogram(aes(y=..density..), color="black", fill="slategray3", breaks= seq(800, 2500, 25)) +
+  #  xlim(800, 2500) +
+  scale_x_continuous(breaks = seq(750, 2500, by = 250)) +
+  geom_density(color = "black", fill = "cadetblue2", alpha = 0.15) +
+  geom_vline(aes(xintercept=getmode(mean_rating), color="Moda"),
+             linetype="dashed", size=0.8) +
+  geom_vline(aes(xintercept=mean(mean_rating), color="Media"),
+             linetype="dashed", size=0.8) +
+  geom_vline(aes(xintercept=median(mean_rating), color="Mediana"),
+             linetype="dashed", size=0.8) +
+  scale_color_manual(name = "", values = c(Moda = "red", Media = "blue", Mediana = "green")) +
+  labs(title = "Figura 2. Distribución del promedio de Elo entre ambos jugadores.",
+       subtitle = "Cada punto representa una partida observada.",
+       x = "Elo promedio", y = "Densidad")
+
+#FIGURA 3
+
+datos |> 
+  ggplot(aes(x = rating_diff, fill=winner)) +
+  geom_density(alpha= 0.6) +
+  xlim(-1000, 1000) +
+  #  scale_x_continuous(breaks = seq(-1500, 1500, by = 250)) +
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(name="Ganador", values=c("black", "slategray3", "white"),
+                    labels = c("Negras", "Empate", "Blancas")) +
+  labs(title = "Figura 3. Relación entre la diferencia de Elo y el equipo ganador.",
+       subtitle = "Distribución de la diferencia de Elo respecto a cada resultado.",
+       x = "Diferencia de Elo", y = "Densidad")
+
+#FIGURA 4
+
+datos |> 
+  ggplot(aes(x = turns, fill=winner)) +
+  geom_density(alpha= 0.6) +
+  #  xlim(0, 350) +
+  scale_color_manual(values=c("black", "black", "black")) +
+  scale_fill_manual(name = "Ganador", values=c("black", "slategray3", "white"),
+                    labels = c("Negras", "Empate", "Blancas")) +
+  scale_x_continuous(breaks = seq(0, 350, by = 50)) +
+  labs(title = "Figura 4. Relación entre el número de turnos y el equipo ganador.",
+       subtitle = "Distribución del número de turnos respecto a cada resultado.",
+       x = "Turnos", y = "Densidad")
 
 
+#FIGURA 5
+
+datos |> #INTERESA
+  ggplot(aes(x = turns, y = rating_diff)) +
+  geom_point(shape = 1) +
+  geom_hline(yintercept=0, col="red3", linetype = 1) +
+  scale_x_continuous(breaks = seq(0, 350, by = 50)) +
+  labs(title = "Figura 5. Relación entre el número de turnos y la diferencia de Elo.",
+       subtitle = "Cada punto representa una partida observada.",
+       x = "Turnos", y = "Diferencia de Elo")
 
