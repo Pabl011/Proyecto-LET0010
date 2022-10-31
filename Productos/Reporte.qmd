@@ -90,6 +90,9 @@ datos <- read_csv(here("./Datos/chess_games.csv"), col_select = c(3:5, 8, 10))
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
   mutate(mean_rating = (datos$white_rating + datos$black_rating)/2)
+
+datos <- datos |> 
+  filter(datos$time_increment == "10+0")
 ```
 
 Dentro de esta sección, daremos a conocer las variables que utilizaremos, además de los métodos que aplicaremos para su análisis.
@@ -151,7 +154,7 @@ data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Difer
            )) |> 
   gt() |> 
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
-             subtitle = "Provenientes de la plataforma Lichess") |> 
+             subtitle = "Provenientes de la plataforma Lichess. 20058 observaciones.") |> 
   tab_source_note(source_note = "Fuente: Kaggle.com")
 ```
 

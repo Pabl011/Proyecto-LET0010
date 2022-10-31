@@ -33,7 +33,7 @@ library(ggthemes)
 
 #Importación y limpieza de datos ----
 
-datos <- read_csv("Datos/chess_games.csv", col_select = c(3:5, 8, 10))
+datos <- read_csv("Datos/chess_games.csv", col_select = c(3:6, 8, 10))
 
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
@@ -225,8 +225,8 @@ data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Difer
              "Corresponde al promedio del Elo entre los dos jugadores."
            )) |> 
   gt() |> 
-  tab_header(title = "Base de datos de Partidas de ajedrez en línea",
-             subtitle = "Provenientes de la plataforma Lichess") |> 
+  tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
+             subtitle = "Provenientes de la plataforma Lichess. 20058 observaciones.") |> 
   tab_source_note(source_note = "Fuente: Kaggle.com")
 #FIGURA 1
 
@@ -239,9 +239,11 @@ datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nive
   geom_point(aes(x= 1500,y= 1500), colour="red") +
   scale_x_continuous(breaks = seq(0, 3000, by = 250)) +
   labs(title = "Figura 1. Relación entre el Elo de dos jugadores en una partida.",
+       subtitle = "Cada punto negro representa una partida observada.",
        x = "Elo Blancas", y = "Elo Negras")
 
 #FIGURA 2
+sort(table(datos$mean_rating), decreasing=T)
 
 getmode <- function(v) {
   uniqv <- unique(v)
@@ -262,22 +264,24 @@ datos |>
              linetype="dashed", size=0.8) +
   scale_color_manual(name = "", values = c(Moda = "red", Media = "blue", Mediana = "green")) +
   labs(title = "Figura 2. Distribución del promedio de Elo entre ambos jugadores.",
-       subtitle = "Cada punto representa una partida observada.",
        x = "Elo promedio", y = "Densidad")
 
 #FIGURA 3
 
 datos |> 
   ggplot(aes(x = rating_diff, fill=winner)) +
-  geom_density(alpha= 0.6) +
+  geom_density(alpha= 0.6, na.rm = TRUE) +
   xlim(-1000, 1000) +
   #  scale_x_continuous(breaks = seq(-1500, 1500, by = 250)) +
+  geom_vline(xintercept=0, col = "red", linetype="dashed", size=0.5) +
   scale_color_manual(values=c("black", "black", "black")) +
   scale_fill_manual(name="Ganador", values=c("black", "slategray3", "white"),
                     labels = c("Negras", "Empate", "Blancas")) +
   labs(title = "Figura 3. Relación entre la diferencia de Elo y el equipo ganador.",
-       subtitle = "Distribución de la diferencia de Elo respecto a cada resultado.",
+       subtitle = "Distribución de la diferencia de Elo respecto a cada resultado.
+       Diferencia positiva indica mayor Elo a favor de las blancas y viceversa.",
        x = "Diferencia de Elo", y = "Densidad")
+
 
 #FIGURA 4
 
@@ -294,6 +298,7 @@ datos |>
        x = "Turnos", y = "Densidad")
 
 
+
 #FIGURA 5
 
 datos |> #INTERESA
@@ -302,6 +307,8 @@ datos |> #INTERESA
   geom_hline(yintercept=0, col="red3", linetype = 1) +
   scale_x_continuous(breaks = seq(0, 350, by = 50)) +
   labs(title = "Figura 5. Relación entre el número de turnos y la diferencia de Elo.",
-       subtitle = "Cada punto representa una partida observada.",
+       subtitle = "Cada punto negro representa una partida observada.
+       Diferencia positiva indica mayor Elo a favor de las blancas y viceversa.",
        x = "Turnos", y = "Diferencia de Elo")
+
 
