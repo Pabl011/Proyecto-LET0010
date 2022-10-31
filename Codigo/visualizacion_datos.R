@@ -40,6 +40,11 @@ datos <- datos |>
   mutate(mean_rating = (datos$white_rating + datos$black_rating)/2)
 #  rename(c("Turnos"="turns", "Estado de victoria"="victory_status", "Ganador" = "winner", "Rango Blanco"="white_rating", "Rango Negro"="black_rating", "Diferencia de rangos"="rating_diff"))
 
+datos <- datos |> 
+  mutate(diff_positiva = (datos$rating_diff > 0)) |> 
+  mutate(diff_negativa = (datos$rating_diff < 0)) |> 
+  mutate(diff_cero = (datos$rating_diff == 0))
+
 
 datos <- datos |> 
   filter(datos$time_increment == "10+0")
@@ -312,3 +317,31 @@ datos |> #INTERESA
        x = "Turnos", y = "Diferencia de Elo")
 
 
+
+#TABLA 2
+
+for(i in 1:(length(datos$winner)))
+{
+  if(datos$winner[i] == "Black")
+  {
+    datos$winner[i] <- "Negras"
+  }
+  if(datos$winner[i] == "Draw")
+  {
+    datos$winner[i] <- "Empate"
+  }
+  if(datos$winner[i]=="White")
+  {
+    datos$winner[i] <- "Blancas"
+  }
+}
+
+datos |> 
+  select(c(winner, diff_positiva, diff_negativa, diff_cero)) |> 
+  tbl_summary(by = winner,
+              label = list(diff_positiva ~ "Diferencia Positiva (+)",
+                           diff_negativa ~ "Diferencia Negativa (-)",
+                           diff_cero ~ "Mismo Elo")) |> 
+  modify_footnote(
+    update = list(
+      all_stat_cols() ~ "Frecuencia (%)"))
