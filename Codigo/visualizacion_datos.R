@@ -231,7 +231,7 @@ data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Difer
            )) |> 
   gt() |> 
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
-             subtitle = "Provenientes de la plataforma Lichess. 20058 observaciones.") |> 
+             subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.") |> 
   tab_source_note(source_note = "Fuente: Kaggle.com")
 #FIGURA 1
 
@@ -244,7 +244,7 @@ datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nive
   geom_point(aes(x= 1500,y= 1500), colour="red") +
   scale_x_continuous(breaks = seq(0, 3000, by = 250)) +
   labs(title = "Figura 1. Relación entre el Elo de dos jugadores en una partida.",
-       subtitle = "Cada punto negro representa una partida observada.",
+       subtitle = "Cada punto negro representa una partida observada. 7721 observaciones.",
        x = "Elo Blancas", y = "Elo Negras")
 
 #FIGURA 2
@@ -257,9 +257,9 @@ getmode <- function(v) {
 
 datos |> 
   ggplot(aes(x = mean_rating)) +
-  geom_histogram(aes(y=..density..), color="black", fill="slategray3", breaks= seq(800, 2500, 25)) +
+  geom_histogram(aes(y=..density..), color="black", fill="slategray3", breaks= seq(800, 2500, 50)) +
   #  xlim(800, 2500) +
-  scale_x_continuous(breaks = seq(750, 2500, by = 250)) +
+  scale_x_continuous(breaks = seq(750, 2500, by = 150)) +
   geom_density(color = "black", fill = "cadetblue2", alpha = 0.15) +
   geom_vline(aes(xintercept=getmode(mean_rating), color="Moda"),
              linetype="dashed", size=0.8) +
