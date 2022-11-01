@@ -328,7 +328,7 @@ datos |>
 
 ```
 
-Podemos notar que en su mayoría, las partidas no suelen durar más de 100 turnos antes de que gane un jugador. Además, la distribución de los turnos es bastante similar para ambos casos. El caso de *Empate* es una excepción; esto se puede deber a la fatiga mental generada a lo largo de la partida.
+Podemos notar que en su mayoría, las partidas no suelen durar más de 100 turnos antes de que gane un jugador. Además, la distribución de los turnos es bastante similar para ambos casos. El caso de *Empate* es una excepción.
 
 Para terminar con esta sección, en la siguiente figura observaremos la relación entre el número de turnos y la diferencia de Elo:
 
