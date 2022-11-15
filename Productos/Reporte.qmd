@@ -5,6 +5,7 @@ editor: visual
 code-summary: "Ver código"
 toc-title-document: "Indice"
 self-contained: false
+toc: true
 ---
 
 ## Introducción
@@ -324,3 +325,23 @@ datos |>
   geom_density(alpha= 0.2) +
   xlim(-1000, 1000)
 ```
+
+## Conclusión.
+
+Llegados a esta sección, nos encontramos con las conclusiones obtenidas en base a nuestros análisis. Tal como se mostró a lo largo de nuestro reporte, intentamos responder las preguntas formuladas y establecidas como objetivos en los apartados anteriores:
+
+-   Determinar si es el Elo un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento: Sí, el sistema de clasificación Elo funciona de manera correcta, según lo visto en los análisis de las figuras.
+
+-   Conocer si Influye la diferencia de Elo de los jugadores en el ganador de la partida.
+
+-   Determinar si este juego es realmente equilibrado o se encuentra sesgado en favor de uno de los bandos.
+
+-   Saber si Influye el color del equipo en una partida de larga duración.
+
+A partir de los datos presentados y nuestro análisis de resultados, podemos afirmar que los emparejamientos entre jugadores es ejecutado correctamente en la mayoría de los casos, ya que, según lo visto en las figuras 1 y 2, se suele emparejar a jugadores con Elo similar.
+
+Por otra parte, en base a la figura 3 y la tabla ligada a ésta, podemos notar que la diferencia de Elo juega un papel clave en cuál será el equipo ganador, con esto nos referimos a que una diferencia de Elo a favor de un equipo incrementa sus posibilidades de victoria, indicándonos, es decir, es más probable que un jugador clasificado como "mejor" que su contrincante gane. Además, podemos afirmar que una partida en la que hay menor diferencia de Elo suelen durar más.
+
+Por último, respecto al color del equipo en una partida, podemos afirmar que la distribución de victorias entre equipo *"Negras"* y *"Blancas"* es bastante parecido, por lo que cabría decir que no existe un gran sesgo a favor de un equipo por sobre el otro.
+
+Considerando los datos utilizados, nos encontramos muy limitados en cuanto al análisis, por lo que, si quisiésemos realizar un nuevo análisis a futuro, sería relevante tomar en cuenta tecnisismos avanzados como los movimientos utilizados por los jugadores o estrategias establecidas, ya que con ello se posibilitaría hallar nuevas tendencias o patrones que posibiliten en mejor medida el conocer el resultado obtenido en una partida.
