@@ -1,5 +1,5 @@
 ---
-title: "Análisis de partidas de ajedrez "
+title: "Análisis de partidas de ajedrez en línea "
 format: html
 editor: visual
 code-summary: "Ver código"
