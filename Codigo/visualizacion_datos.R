@@ -31,14 +31,33 @@ library(gghighlight)  #para destacar valores en un gráfico
 library(showtext)
 library(ggthemes)
 
+#install.packages("datos")
+#install.packages("gt")
+#install.packages("gtExtras")
+#install.packages("gtsummary")
+#install.packages("reactable")
+#install.packages("kableExtra")
+#install.packages("broom")
+#install.packages("broom.mixed")
+library(datos)
+library(gt)
+library(gtsummary)
+library(broom)
+library(dplyr)
+library(tidyr)
+#install.packages("here")
+library(here) #Para importar el dataset desde la carpeta "Datos".
+
+#install.packages("reshape")
+library(reshape) #Para transformar nombres de variables
+
 #Importación y limpieza de datos ----
 
-datos <- read_csv("Datos/chess_games.csv", col_select = c(3:6, 8, 10))
+datos <- read_csv(here("./Datos/chess_games.csv"), col_select = c(3,5:6, 8, 10))
 
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
   mutate(mean_rating = (datos$white_rating + datos$black_rating)/2)
-#  rename(c("Turnos"="turns", "Estado de victoria"="victory_status", "Ganador" = "winner", "Rango Blanco"="white_rating", "Rango Negro"="black_rating", "Diferencia de rangos"="rating_diff"))
 
 datos <- datos |> 
   mutate(diff_positiva = (datos$rating_diff > 0)) |> 
@@ -46,8 +65,13 @@ datos <- datos |>
   mutate(diff_cero = (datos$rating_diff == 0))
 
 
+
 datos <- datos |> 
   filter(datos$time_increment == "10+0")
+
+
+datos <- datos |> 
+  select(-time_increment)
 
 
 datos |> 
@@ -219,20 +243,23 @@ library(broom)
 library(dplyr)
 library(tidyr)
 
-data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
-           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua"),
+data.frame(Variable = c("turns", "winner", "white_rating", "black_rating", "rating_diff", "mean_rating", "diff_positiva", "diff_negativa", "diff_cero"),
+           Traducción = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio", "Diferencia positiva", "Diferencia negativa", "Mismo Elo"),
+           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua", "Cualitativa dicotómica (boolean)","Cualitativa dicotómica (boolean)","Cualitativa dicotómica (boolean)"),
            Descripción = c(
              "Corresponde a la cantidad de turnos que duró la partida.",
              "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
              "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador dentro de la plataforma.",
              "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador dentro de la plataforma.",
              "Diferencia de Elo entre los contrincantes. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa.",
-             "Corresponde al promedio del Elo entre los dos jugadores."
+             "Corresponde al promedio del Elo entre los dos jugadores.",
+             "Indica 'TRUE' si existe una diferencia de Elo a favor de equipo de las blancas. En caso contrario indica 'FALSE'.",
+             "Indica 'TRUE' si existe una diferencia de Elo a favor del equipo de las negras. En caso contrario indica 'FALSE'.",
+             "Indica 'TRUE' si ambos jugadores tienen el mismo Elo, es decir, la diferencia de Elo es cero. En caso contrario indica 'FALSE'."
            )) |> 
   gt() |> 
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
-             subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.") |> 
-  tab_source_note(source_note = "Fuente: Kaggle.com")
+             subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.")
 #FIGURA 1
 
 datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento.
