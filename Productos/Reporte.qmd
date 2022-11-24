@@ -12,7 +12,7 @@ toc: true
 
 ### Contexto
 
-El ajedrez moderno es un juego de mesa, el cual, desde su origen oriental, terminó de asentarse completamente a inicios del siglo XVI en el continente europeo. Desde esa época hasta el día de hoy, se ha convertido en un deporte reconocido mundialmente en el que se han realizado una inmensa cantidad de competiciones.
+El ajedrez moderno es un juego de mesa, el cual, desde su origen oriental, terminó de asentarse completamente a inicios del siglo XVI en el continente europeo. Desde esa época hasta el día de hoy, se ha convertido en un deporte reconocido mundialmente en el que se han realizado una inmensa cantidad de competiciones. g
 
 Una partida de ajedrez se disputa entre dos jugadores, uno contra uno; cada uno posee 16 piezas, cada una con su propia particularidad, siendo las de un jugador de color claro, llamadas *blancas*, y las de su oponente de color oscuro, llamadas *negras*. Las piezas se mueven sobre un tablero de ajedrez cuadrado de 64 casillas. El ajedrez no es un juego de azar, sino un juego racional y de estrategia, ya que cada jugador decidirá el movimiento de sus piezas en cada turno. Comienza a jugar quien lleve las blancas, lo que le concede una ventaja pequeña pero esencial en los niveles altos de competición.
 
@@ -22,7 +22,7 @@ En la siguiente imagen se da una representación visual de lo descrito al inicio
 
 ### Planteamiento del caso
 
-Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia, en las que se empareja a dos jugadores con un nivel competitivo basado en el sistema de clasificación Elo.
+Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia, como por ejemplo la plataforma Lichess.org, en la que se empareja a dos jugadores con un nivel competitivo basado en el sistema de clasificación Elo.
 
 Respecto al sistema de puntuación competitivo Elo, resulta relevante aclarar que, dentro de la plataforma Lichess, un jugador con un rango entre 1300 y 1700 se considera promedio, bajo ese rango se puede decir que el jugador es un principiante, mientras que por encima es uno intermedio que empieza a tener un nivel avanzado, y más arriba de 2000 de Elo, se podría considerar un jugador con un nivel bastante avanzado.
 
@@ -138,7 +138,8 @@ data.frame(Variable = c("turns", "winner", "white_rating", "black_rating", "rati
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
              subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.")
 ```
-Fuente: [Kaggle.com](https://bit.ly/3XwOUEu )
+
+Fuente: [Kaggle.com](https://bit.ly/3XwOUEu)
 
 Para el caso de los métodos que utilizaremos, nos basaremos principalmente en el uso de gráficos que representen la relación entre las distintas variables, con objetivo de responder a las preguntas hechas en el apartado de la introducción:
 
@@ -160,7 +161,7 @@ A continuación, en la Figura 1, nos encontramos con un gráfico de puntos en el
 #| echo: false
 datos |> #INTERESA: Determinar si es el ELO un sistema eficaz para medir el nivel de competencia de un jugador y la efectividad del emparejamiento.
   ggplot(aes(x = white_rating, y = black_rating)) +
-  geom_point(shape = 16, size=0.8) +
+  geom_point(shape = 1, size=1) +
   geom_abline(aes(intercept = mean(black_rating) - mean(white_rating),
                            slope = 1),
                        linetype = 2, color = "red") +
@@ -268,7 +269,7 @@ datos |>
 
 Podemos observar que, para el caso en que el equipo ganador es el de las *Blancas*, la diferencia de Elo se concentra mayoritariamente en los valores positivos, mientras que, por el caso contrario, cuando ganan las *Negras* la diferencia de Elo tiende a concentrarse en valores negativos. En el caso de *empate*, la distribución de la diferencia de Elo se encuentra más equilibrada y centrada en el valor cero. Todo lo anterior nos indicaría que un jugador con mayor nivel competitivo suele ganarle a uno de menor nivel competitivo.
 
-Siguiendo con el análisis de respecto al equipo ganador, en la figura 4 observaremos la relación entre el número de turnos que dura una partida y el equipo ganador en cuestión:
+Siguiendo con el análisis respecto al equipo ganador, en la figura 4 observaremos la relación entre el número de turnos que dura una partida y el equipo ganador en cuestión:
 
 ```{r}
 #| echo: false
@@ -298,7 +299,7 @@ datos |>
 
 ```
 
-Podemos notar que en su mayoría, las partidas no suelen durar más de 100 turnos antes de que gane un jugador. Además, la distribución de los turnos es bastante similar para ambos casos. El caso de *Empate* es una excepción.
+Podemos notar que en su mayoría, las partidas no suelen durar más de 100 turnos antes de que gane un jugador. Además, la distribución de los turnos es bastante similar para ambos casos. El caso de *Empate* es una excepción, ya que la cantidad de partidas empatadas es mucho menor en comparación a los otros dos casos, por lo que opinar sobre ellas estaría sesgado, pero en base a lo obtenido, podemos afirmar que en partidas de mayor duración suele haber mayor probabilidad de empatar.
 
 Para terminar con esta sección, en la siguiente figura observaremos la relación entre el número de turnos y la diferencia de Elo:
 
@@ -316,7 +317,7 @@ datos |> #INTERESA
 
 ```
 
-Podemos apreciar una forma parecida a la de un "bulbo" generada por las observaciones de la gráfica, sin embargo, siempre centrado en cero. En base a la gráfica, podemos estimar que mientras mayor es la diferencia de Elo, menos turnos duran las partidas, por otro lado, mientras que menor es la diferencia de Elo es más probable que las partidas duren una cantidad de turnos más extensa, sin embargo, también existe una buena cantidad de partidas en las que la diferencia de Elo era baja y la cantidad de turnos que duró también lo era.
+Podemos apreciar una forma parecida a la de un "bulbo" generada por las observaciones de la gráfica centrada en cero. En base a la gráfica, podemos estimar que mientras mayor es la diferencia de Elo, menos turnos duran las partidas. Por otro lado, mientras menor es la diferencia de Elo, es más probable que las partidas duren más turnos, sin embargo, también existe una buena cantidad de partidas en las que la diferencia de Elo era baja y la cantidad de turnos que duró también lo era.
 
 ```{r}
 #| echo: false
