@@ -89,7 +89,7 @@ library(reshape) #Para transformar nombres de variables
 
 #Importación y limpieza de datos ----
 
-datos <- read_csv(here("./Datos/chess_games.csv"), col_select = c(3:6, 8, 10))
+datos <- read_csv(here("./Datos/chess_games.csv"), col_select = c(3,5:6, 8, 10))
 
 datos <- datos |> 
   mutate(rating_diff = datos$white_rating - datos$black_rating) |> 
@@ -104,6 +104,11 @@ datos <- datos |>
 
 datos <- datos |> 
   filter(datos$time_increment == "10+0")
+
+datos <- datos |> 
+  select(-datos$victory_status)
+datos <- datos |> 
+  select(-time_increment)
 ```
 
 Dentro de esta sección, daremos a conocer las variables que utilizaremos, además de los métodos que aplicaremos para su análisis.
@@ -114,20 +119,24 @@ En la siguiente tabla, se presentan las distintas variables de la base de datos 
 
 ```{r}
 #| echo: false
-data.frame(Variable = c("Turnos", "Ganador", "white_rating (Elo Blancas)", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
-           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua"),
+data.frame(Variable = c("turns", "winner", "white_rating", "black_rating", "rating_diff", "mean_rating", "diff_positiva", "diff_negativa", "diff_cero"),
+           Traducción = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio", "Diferencia positiva", "Diferencia negativa", "Mismo Elo"),
+           Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua", "Cualitativa dicotómica (boolean)","Cualitativa dicotómica (boolean)","Cualitativa dicotómica (boolean)"),
            Descripción = c(
              "Corresponde a la cantidad de turnos que duró la partida.",
              "Corresponde al equipo ganador de la partida, ya sea blancas o negras. En caso de haber un empate, no existe ganador, por lo que queda clasificado como 'empate'.",
              "Puntos de clasificación Elo del contrincante del equipo blanco. Representa el nivel competitivo del jugador dentro de la plataforma.",
              "Puntos de clasificación Elo del contrincante del equipo negro. Representa el nivel competitivo del jugador dentro de la plataforma.",
              "Diferencia de Elo entre los contrincantes. Si su valor es positivo, indica que el jugador del equipo blanco tiene mayor Elo, y viceversa.",
-             "Corresponde al promedio del Elo entre los dos jugadores."
+             "Corresponde al promedio del Elo entre los dos jugadores.",
+             "Indica 'TRUE' si existe una diferencia de Elo a favor de equipo de las blancas. En caso contrario indica 'FALSE'.",
+             "Indica 'TRUE' si existe una diferencia de Elo a favor del equipo de las negras. En caso contrario indica 'FALSE'.",
+             "Indica 'TRUE' si ambos jugadores tienen el mismo Elo, es decir, la diferencia de Elo es cero. En caso contrario indica 'FALSE'."
            )) |> 
   gt() |> 
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
              subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.") |> 
-  tab_source_note(source_note = "Fuente: Kaggle.com")
+  tab_source_note(source_note = "Fuente: kaggle.com ; https://bit.ly/3XwOUEu")
 ```
 
 Para el caso de los métodos que utilizaremos, nos basaremos principalmente en el uso de gráficos que representen la relación entre las distintas variables, con objetivo de responder a las preguntas hechas en el apartado de la introducción:
