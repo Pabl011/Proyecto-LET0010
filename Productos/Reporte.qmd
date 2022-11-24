@@ -24,6 +24,8 @@ En la siguiente imagen se da una representación visual de lo descrito al inicio
 
 Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia, en las que se empareja a dos jugadores con un nivel competitivo basado en el sistema de clasificación Elo.
 
+Respecto al sistema de puntuación competitivo Elo, resulta relevante aclarar que, dentro de la plataforma Lichess, un jugador con un rango entre 1300 y 1700 se considera promedio, bajo ese rango se puede decir que el jugador es un principiante, mientras que por encima es uno intermedio que empieza a tener un nivel avanzado, y más arriba de 2000 de Elo, se podría considerar un jugador con un nivel bastante avanzado.
+
 Existen determinados factores que pueden afectar o predecir que un jugador gane a otro, ya sea el color de sus piezas, el Elo de los jugadores (que corresponde al nivel competitivo que presenta un jugador dentro de la plataforma), la cantidad de turnos que dura una partida, el tipo de partida, entre otros.
 
 Resulta relevante analizar estos factores, con motivo de estimar cuán equilibrado realmente se encuentra este deporte y su sistema de emperajemientos , si existe tendencia a un resultado debido a un factor específico y cómo varían las partidas dependiendo del nivel de los jugadores, ya que en partidas se enfrenta a jugadores de un nivel competitivo similar.
@@ -105,8 +107,7 @@ datos <- datos |>
 datos <- datos |> 
   filter(datos$time_increment == "10+0")
 
-datos <- datos |> 
-  select(-datos$victory_status)
+
 datos <- datos |> 
   select(-time_increment)
 ```
@@ -135,9 +136,9 @@ data.frame(Variable = c("turns", "winner", "white_rating", "black_rating", "rati
            )) |> 
   gt() |> 
   tab_header(title = "Tabla 1. Base de datos de Partidas de ajedrez en línea",
-             subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.") |> 
-  tab_source_note(source_note = "Fuente: kaggle.com ; https://bit.ly/3XwOUEu")
+             subtitle = "Provenientes de la plataforma Lichess. 7721 observaciones.")
 ```
+Fuente: [Kaggle.com](https://bit.ly/3XwOUEu )
 
 Para el caso de los métodos que utilizaremos, nos basaremos principalmente en el uso de gráficos que representen la relación entre las distintas variables, con objetivo de responder a las preguntas hechas en el apartado de la introducción:
 
@@ -152,8 +153,6 @@ Para el caso de los métodos que utilizaremos, nos basaremos principalmente en e
 ## Análisis de resultados
 
 Dentro de esta sección, procederemos con el análisis de datos y la presentación de los resultados obtenidos en base a la observación de gráficas.
-
-Respecto al sistema de puntuación competitivo Elo, resulta relevante aclarar que, dentro de la plataforma Lichess, un jugador con un rango entre 1300 y 1700 se considera promedio, bajo ese rango se puede decir que el jugador es un principiante, mientras que por encima es uno intermedio que empieza a tener un nivel avanzado, y más arriba de 2000 de Elo, se podría considerar un jugador con un nivel bastante avanzado.
 
 A continuación, en la Figura 1, nos encontramos con un gráfico de puntos en el que podemos observar la relación entre el nivel competitivo de dos jugadores en una partida. Cada punto representa una partida, mientras que su posición indica el Elo de cada contrincante:
 
