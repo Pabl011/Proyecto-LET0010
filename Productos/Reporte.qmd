@@ -1,5 +1,5 @@
 ---
-title: "Análisis de Partidas de Ajedrez "
+title: "Análisis de partidas de ajedrez "
 format: html
 editor: visual
 code-summary: "Ver código"
@@ -20,11 +20,11 @@ En la siguiente imagen se da una representación visual de lo descrito al inicio
 
 ![](images/tablero%20lichess1.JPG){width="375"}
 
-### Planteamiento del caso.
+### Planteamiento del caso
 
-Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia.
+Hoy en día existen páginas y plataformas en línea para practicar, disfrutar y competir en este aclamado juego de estrategia, en las que se empareja a dos jugadores con un nivel competitivo basado en el sistema de clasificación Elo.
 
-Existen determinados factores que pueden afectar o predecir que un jugador gane a otro, ya sea el color de sus piezas, el Elo de los jugadores (correspondiente al nivel competitivo que presenta un jugador), la cantidad de turnos que dura una partida, el tipo de partida, entre otros.
+Existen determinados factores que pueden afectar o predecir que un jugador gane a otro, ya sea el color de sus piezas, el Elo de los jugadores (que corresponde al nivel competitivo que presenta un jugador dentro de la plataforma), la cantidad de turnos que dura una partida, el tipo de partida, entre otros.
 
 Resulta relevante analizar estos factores, con motivo de estimar cuán equilibrado realmente se encuentra este deporte y su sistema de emperajemientos , si existe tendencia a un resultado debido a un factor específico y cómo varían las partidas dependiendo del nivel de los jugadores, ya que en partidas se enfrenta a jugadores de un nivel competitivo similar.
 
@@ -34,7 +34,7 @@ Con objetivo de aclarar estas incógnitas, en este proyecto realizaremos una exp
 
 Este trabajo se encuentra dividido en tres secciones: En la primera sección presentaremos y describiremos los datos y variables que serán utilizadas y los métodos que aplicaremos para su análisis. En la segunda sección, mostraremos los resultados obtenidos, organizados en base a las variables de interés. Para finalizar, en la tercera sección, presentaremos las conclusiones acerca de las variables que fueron llevadas al análisis y su influencia en el resultado de una partida.
 
-## Presentación de los datos.
+## Presentación de los datos
 
 ```{r}
 #| echo: false
@@ -108,13 +108,13 @@ datos <- datos |>
 
 Dentro de esta sección, daremos a conocer las variables que utilizaremos, además de los métodos que aplicaremos para su análisis.
 
-En principio, analizaremos los datos provenientes de 7721 partidas de ajedrez disputadas en la plataforma en línea Lichess.org. La modalidad de estas partidas es "10+0 - Rapid", que corresponde al tiempo en minutos que puede durar la partida y el tiempo agregado en segundos por turno ejecutado, es decir, analizaremos partidas que pueden durar, como mucho, 10 minutos exactos.
+En principio, analizaremos los datos provenientes de 7721 partidas de ajedrez disputadas en la plataforma en línea Lichess.org. La modalidad de estas partidas es "10+0 - Rapid", que corresponde al tiempo en minutos que puede durar la partida y el tiempo agregado en segundos por turno ejecutado, es decir, analizaremos partidas que pueden durar, como máximo, 10 minutos exactos.
 
 En la siguiente tabla, se presentan las distintas variables de la base de datos con las que trabajaremos, su tipo y una descripción para entender mejor cómo funciona esta.
 
 ```{r}
 #| echo: false
-data.frame(Variable = c("Turnos", "Ganador", "Elo Blancas", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
+data.frame(Variable = c("Turnos", "Ganador", "white_rating (Elo Blancas)", "Elo Negras", "Diferencia de Elo", "Elo promedio"),
            Tipo = c("Cuantitativa discreta", "Cualitativa nominal", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa discreta", "Cuantitativa continua"),
            Descripción = c(
              "Corresponde a la cantidad de turnos que duró la partida.",
@@ -140,7 +140,7 @@ Para el caso de los métodos que utilizaremos, nos basaremos principalmente en e
 
 -Saber si Influye el color del equipo en una partida de larga duración.
 
-## Análisis de resultados.
+## Análisis de resultados
 
 Dentro de esta sección, procederemos con el análisis de datos y la presentación de los resultados obtenidos en base a la observación de gráficas.
 
@@ -326,7 +326,7 @@ datos |>
   xlim(-1000, 1000)
 ```
 
-## Conclusión.
+## Conclusión
 
 Llegados a esta sección, nos encontramos con las conclusiones obtenidas en base a nuestros análisis. Tal como se mostró a lo largo de nuestro reporte, intentamos responder las preguntas formuladas y establecidas como objetivos en los apartados anteriores:
 
